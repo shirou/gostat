@@ -52,6 +52,13 @@ func (m MQTT) disconnect(conn io.Writer) error {
 }
 
 func (m MQTT) Emit(rs []record.Record, args []string) error {
+	var topic string
+	if len(args) < 2{
+		topic = "gostat"
+	}else{
+		topic = args[1]
+	}
+
 	conn, err := net.Dial("tcp", args[0])
 	if err != nil {
 		fmt.Println("Could not connect server")
@@ -90,7 +97,7 @@ func (m MQTT) Emit(rs []record.Record, args []string) error {
 				QosLevel: QosAtLeastOnce,
 				Retain:   false,
 			},
-			TopicName: "gostat/" + r.Tag,
+			TopicName: topic + "/" + r.Tag,
 			MessageId: uint16(id),
 			Payload:   BytesPayload(data),
 		}
