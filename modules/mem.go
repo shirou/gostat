@@ -35,6 +35,7 @@ func (p Mem) Check() error {
 	} else {
 		return nil
 	}
+	return nil  // for 1.0
 }
 
 func (p Mem) Extract(retchan chan record.Record) {

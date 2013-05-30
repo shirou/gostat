@@ -36,6 +36,7 @@ func (p Disk) Check() error {
 	} else {
 		return nil
 	}
+	return nil  // for 1.0
 }
 
 func (p Disk) Extract(retchan chan record.Record) {
