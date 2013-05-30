@@ -5,7 +5,6 @@ GoStat
 GoStat is monitoring systems which is written in golang. GoStat allow
 you to view some of your system resources in real-time.
 
-
 note: This is my golang practicing code. Don't use in production.
 
 Installation / Usage
@@ -13,12 +12,13 @@ Installation / Usage
 
 ::
 
-  % go get
-  % go build
+  % mkdir gostat
+  % cd gostat
+  % go get bitbucket.org/r_rudi/goget
 
 ::
 
-  % gostat
+  % bin/gostat
   time:2013-05-28 20:53:50.8447712 +0900 JST      tag:aio aio:0
   time:2013-05-28 20:53:50.844889839 +0900 JST    tag:load load1:0.00      load5:0.00      load15:0.00
   time:2013-05-28 20:53:50.845009392 +0900 JST    tag:memory usage MemFree:254008  Buffers:104108  Cached:493348
@@ -30,13 +30,25 @@ Options
 - s: refresh time. default is 0 and not loop.
 - o: output format ("ltsv", "csv", "whitespace", "mqtt", "http")
 
-If you choose mqtt or http, you need specify server url
+If you choose mqtt or http, you need specify server url.
 
-::
+- http
 
   % ./gostat -o http http://example.com/push
-  or
-  % ./gostat -o mqtt mqtt.example.com:1833
+
+- mqtt
+
+  ::
+
+    % ./gostat -o mqtt mqtt.example.com:1833
+
+  or if you want to specify topic,
+
+  ::
+
+    % ./gostat -o mqtt mqtt.example.com:1833 r_rudi/gostat/linux
+
+  Default topic is "gostat"
 
 Features
 -----------
