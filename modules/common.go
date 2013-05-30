@@ -8,10 +8,11 @@ import (
 )
 
 type Plugin interface {
-	Check() error
-	Extract(chan record.Record)
+	Check() error               // check that resource is available or not
+	Extract(chan record.Record) // get information from that resource
 }
 
+// Read contents from file and split by new line.
 func ReadLines(filename string) ([]string, error) {
 	f, err := os.Open(filename)
 	if err != nil {

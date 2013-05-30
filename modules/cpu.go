@@ -37,7 +37,7 @@ func (p Cpu) Check() error {
 	} else {
 		return nil
 	}
-	return nil  // for 1.0
+	return nil // for 1.0
 }
 
 func (p Cpu) GetVal(filename string, vars []string) ([]int, float32, error) {

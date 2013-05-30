@@ -35,7 +35,7 @@ func (p Load) Check() error {
 	} else {
 		return nil
 	}
-	return nil  // for 1.0
+	return nil // for 1.0
 }
 
 func (p Load) Extract(retchan chan record.Record) {

@@ -4,6 +4,7 @@ import (
 	"bitbucket.org/r_rudi/gostat/record"
 )
 
+// the interface of Output modules
 type Output interface {
 	Emit([]record.Record, []string) error
 }
