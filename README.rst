@@ -34,7 +34,9 @@ If you choose mqtt or http, you need specify server url.
 
 - http
 
-  % ./gostat -o http http://example.com/push
+  ::
+
+    % ./gostat -o http http://example.com/push
 
 - mqtt
 
