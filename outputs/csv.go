@@ -1,7 +1,7 @@
 package outputs
 
 import (
-	"../record"
+	"bitbucket.org/r_rudi/gostat/record"
 	"fmt"
 	"strings"
 )

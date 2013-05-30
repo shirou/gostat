@@ -1,7 +1,7 @@
 package modules
 
 import (
-	"../record"
+	"bitbucket.org/r_rudi/gostat/record"
 	"fmt"
 	"io"
 	"os"

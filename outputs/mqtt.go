@@ -2,7 +2,7 @@ package outputs
 
 import (
 	"encoding/json"
-	"../record"
+	"bitbucket.org/r_rudi/gostat/record"
 	"fmt"
 	"net"
 	"io"

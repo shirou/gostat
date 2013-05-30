@@ -3,7 +3,7 @@ package outputs
 import (
 	"net/url"
 	"net/http"
-	"../record"
+	"bitbucket.org/r_rudi/gostat/record"
 	"encoding/json"
 )
 

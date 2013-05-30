@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./modules"
-	"./outputs"
-	"./record"
+	"bitbucket.org/r_rudi/gostat/modules"
+	"bitbucket.org/r_rudi/gostat/outputs"
+	"bitbucket.org/r_rudi/gostat/record"
 	"flag"
 	"reflect"
 	"time"
