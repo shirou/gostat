@@ -1,10 +1,10 @@
 package outputs
 
 import (
-	"net/url"
-	"net/http"
 	"bitbucket.org/r_rudi/gostat/record"
 	"encoding/json"
+	"net/http"
+	"net/url"
 )
 
 type Http struct{}
@@ -24,12 +24,12 @@ func (l Http) Emit(rs []record.Record, args []string) error {
 		}
 
 		data, err := json.Marshal(value)
-		if err != nil{
+		if err != nil {
 			continue
 		}
 
 		values := url.Values{}
-        values.Set("json", string(data))
+		values.Set("json", string(data))
 
 		http.PostForm(dst, values)
 	}
