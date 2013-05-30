@@ -42,7 +42,7 @@ func get(plugin_list []modules.Plugin, out outputs.Output, args []string) {
 
 func main() {
 	o := flag.String("o", "ltsv", "Output format")
-	s := flag.Int("s", 0, "sleep seconds")
+	i := flag.Int("i", 0, "interval time(seconds)")
 	flag.Parse()
 
 	plugin_list := make([]modules.Plugin, 0)
@@ -78,12 +78,12 @@ func main() {
 	}
 
 	// Extract
-	if *s == 0 {
+	if *i == 0 {
 		get(plugin_list, out, flag.Args())
 	} else {
 		for {
 			get(plugin_list, out, flag.Args())
-			time.Sleep(time.Second * time.Duration(*s))
+			time.Sleep(time.Second * time.Duration(*i))
 		}
 	}
 
