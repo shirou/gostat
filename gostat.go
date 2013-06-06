@@ -4,9 +4,11 @@ import (
 	"bitbucket.org/r_rudi/gostat/modules"
 	"bitbucket.org/r_rudi/gostat/outputs"
 	"bitbucket.org/r_rudi/gostat/record"
+	"github.com/msbranco/goconfig"
 	"flag"
 	"reflect"
 	"time"
+	"runtime"
 )
 
 func Call(m map[string]func() (modules.Plugin, error), name string) (result interface{}, err error) {
@@ -41,9 +43,25 @@ func get(plugin_list []modules.Plugin, out outputs.Output, args []string) {
 }
 
 func main() {
+	c := flag.String("", "", "Config file")
 	o := flag.String("o", "ltsv", "Output format")
 	i := flag.Int("i", 0, "interval time(seconds)")
 	flag.Parse()
+
+	// load config file
+	conf := map[string]map[string]string{}
+	conf["root"]["os"] = runtime.GOOS
+	conf["root"]["configfile"] = *c
+	config, err := goconfig.ReadConfigFile(*c);
+	if err == nil{
+		for _, section := range config.GetSections(){
+			options, _ := config.GetOptions(section)
+			for _, option := range options{
+				conf[section][option], _ = config.GetRawString(section, option)
+			}
+		}
+	}
+
 
 	plugin_list := make([]modules.Plugin, 0)
 
@@ -59,6 +77,7 @@ func main() {
 			plugin_list = append(plugin_list, ret[0].Interface().(modules.Plugin))
 		}
 	}
+
 
 	// Setting Output format
 	var out outputs.Output
