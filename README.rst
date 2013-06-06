@@ -14,6 +14,7 @@ Installation / Usage
 
   % mkdir gostat
   % cd gostat
+  % export GOPATH=`pwd`
   % go get bitbucket.org/r_rudi/gostat
 
 ::
