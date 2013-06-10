@@ -46,7 +46,7 @@ func (p Load) Check(conf map[string]map[string]string) error {
 	}
 }
 
-func (p Load) getLinux() (map[string]string, error) {
+func (p Load) extractLinux() (map[string]string, error) {
 	filename := "/proc/loadavg"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
@@ -61,7 +61,7 @@ func (p Load) getLinux() (map[string]string, error) {
 	return ret, err
 }
 
-func (p Load) getFreeBSD() (map[string]string, error) {
+func (p Load) extractFreeBSD() (map[string]string, error) {
 	out, err := exec.Command("/sbin/sysctl", "-n", "vm.loadavg").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -81,9 +81,9 @@ func (p Load) Extract(retchan chan record.Record, conf map[string]map[string]str
 	var err error
 	switch conf["root"]["os"] {
 	case "linux":
-		ret, err = p.getLinux()
+		ret, err = p.extractLinux()
 	case "freebsd":
-		ret, err = p.getFreeBSD()
+		ret, err = p.extractFreeBSD()
 	default:
 		close(retchan)
 		return
