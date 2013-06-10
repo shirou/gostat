@@ -15,7 +15,7 @@ type Aio struct {
 	Scale int
 }
 
-func NewAio() (Plugin, error) {
+func NewAio() (Plugin) {
 	p := Aio{
 		"aio",
 		[]string{"#aio"},
@@ -23,10 +23,10 @@ func NewAio() (Plugin, error) {
 		"d",
 		1024,
 	}
-	return Plugin(p), p.Check()
+	return Plugin(p)
 }
 
-func (p Aio) Check() error {
+func (p Aio) Check(conf map[string]map[string]string) error {
 	filename := "/proc/sys/fs/aio-nr"
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -37,7 +37,7 @@ func (p Aio) Check() error {
 	return nil // for 1.0
 }
 
-func (p Aio) Extract(retchan chan record.Record) {
+func (p Aio) Extract(retchan chan record.Record, conf map[string]map[string]string) {
 	filename := "/proc/sys/fs/aio-nr"
 	s, err := ReadLines(filename)
 	if err != io.EOF {

@@ -10,7 +10,7 @@ type WhiteSpace struct{}
 
 func (l WhiteSpace) Header(r record.Record) {}
 
-func (l WhiteSpace) Emit(rs []record.Record, args []string) error {
+func (l WhiteSpace) Emit(rs []record.Record, conf map[string]map[string]string) error {
 	kv := make([]string, 0)
 	keys := make([]string, 0)
 	for _, r := range rs {

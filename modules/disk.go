@@ -17,7 +17,7 @@ type Disk struct {
 	Scale int
 }
 
-func NewDisk() (Plugin, error) {
+func NewDisk() (Plugin) {
 	p := Disk{
 		"disk",
 		[]string{"read", "writ"},
@@ -25,10 +25,10 @@ func NewDisk() (Plugin, error) {
 		"d",
 		34,
 	}
-	return Plugin(p), p.Check()
+	return Plugin(p)
 }
 
-func (p Disk) Check() error {
+func (p Disk) Check(conf map[string]map[string]string) error {
 	filename := "/proc/diskstats"
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -39,7 +39,7 @@ func (p Disk) Check() error {
 	return nil // for 1.0
 }
 
-func (p Disk) Extract(retchan chan record.Record) {
+func (p Disk) Extract(retchan chan record.Record, conf map[string]map[string]string) {
 	fmt.Println(p.Name + " check")
 
 	filename := "/proc/diskstats"

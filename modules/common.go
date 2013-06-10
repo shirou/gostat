@@ -5,11 +5,13 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"fmt"
 )
 
 type Plugin interface {
-	Check() error               // check that resource is available or not
-	Extract(chan record.Record) // get information from that resource
+	Check(map[string]map[string]string) error               // check that resource is available or not
+	Extract(chan record.Record, map[string]map[string]string) // get information from that resource
+
 }
 
 // Read contents from file and split by new line.
@@ -30,4 +32,21 @@ func ReadLines(filename string) ([]string, error) {
 	}
 
 	return ret, err
+}
+
+
+type ModuleError struct {
+	ModuleName string
+	Where string
+	Reason string
+}
+func NewModuleError(modulename string, where string, reason string) error{
+	return ModuleError {
+		modulename,
+		where,
+		reason,
+	}
+}
+func (e ModuleError) Error() string{
+	return fmt.Sprintf("%s: %s, %s", e.ModuleName, e.Where, e.Reason)
 }

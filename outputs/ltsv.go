@@ -10,7 +10,7 @@ type LTSV struct{}
 
 func (l LTSV) Header(r record.Record) {}
 
-func (l LTSV) Emit(rs []record.Record, args []string) error {
+func (l LTSV) Emit(rs []record.Record, conf map[string]map[string]string) error {
 	for _, r := range rs {
 		buf := fmt.Sprintf("time:%s\ttag:%s\t", r.Time, r.Tag)
 		kv := make([]string, 0)

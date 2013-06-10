@@ -18,7 +18,7 @@ type Cpu struct {
 	Scale int
 }
 
-func NewCpu() (Plugin, error) {
+func NewCpu() (Plugin) {
 	p := Cpu{
 		"cpu",
 		[]string{"usr", "sys", "idl", "wai", "hiq", "siq", "stl"}, // 2.6.11 or later
@@ -26,10 +26,10 @@ func NewCpu() (Plugin, error) {
 		"p",
 		34,
 	}
-	return Plugin(p), p.Check()
+	return Plugin(p)
 }
 
-func (p Cpu) Check() error {
+func (p Cpu) Check(conf map[string]map[string]string) error {
 	filename := "/proc/stat"
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -61,7 +61,7 @@ func (p Cpu) GetVal(filename string, vars []string) ([]int, float32, error) {
 	return ret, float32(total), nil
 }
 
-func (p Cpu) Extract(retchan chan record.Record) {
+func (p Cpu) Extract(retchan chan record.Record, conf map[string]map[string]string) {
 	filename := "/proc/stat"
 	s1, total1, err := p.GetVal(filename, p.Vars)
 	if err != nil {

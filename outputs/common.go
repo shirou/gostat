@@ -6,5 +6,5 @@ import (
 
 // the interface of Output modules
 type Output interface {
-	Emit([]record.Record, []string) error
+	Emit([]record.Record, map[string]map[string]string) error
 }

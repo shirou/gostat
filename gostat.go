@@ -16,8 +16,8 @@ func Call(m map[string]func() (modules.Plugin, error), name string) (result inte
 	return f.Call(nil), nil
 }
 
-func funcs() map[string]func() (modules.Plugin, error) {
-	funcs := map[string]func() (modules.Plugin, error){
+func funcs() map[string]func() (modules.Plugin) {
+	funcs := map[string]func() (modules.Plugin){
 		"aio":  modules.NewAio,
 		"cpu":  modules.NewCpu,
 		"load": modules.NewLoad,
@@ -26,19 +26,19 @@ func funcs() map[string]func() (modules.Plugin, error) {
 	return funcs
 }
 
-func get(plugin_list []modules.Plugin, out outputs.Output, args []string) {
+func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[string]string) {
 	ch := make(chan record.Record)
 	count := 0
 	for _, o := range plugin_list {
 		count += 1
-		go o.Extract(ch)
+		go o.Extract(ch, conf)
 	}
 
 	ret_list := make([]record.Record, 0)
 	for i := 0; i < count; i++ {
 		ret_list = append(ret_list, <-ch)
 	}
-	out.Emit(ret_list, args)
+	out.Emit(ret_list, conf)
 
 }
 
@@ -49,9 +49,11 @@ func main() {
 	flag.Parse()
 
 	// load config file
-	conf := map[string]map[string]string{}
+	conf := make(map[string]map[string]string)
+	conf["root"] = make(map[string]string)
 	conf["root"]["os"] = runtime.GOOS
 	conf["root"]["configfile"] = *c
+	if *c != ""{
 	config, err := goconfig.ReadConfigFile(*c);
 	if err == nil{
 		for _, section := range config.GetSections(){
@@ -60,6 +62,7 @@ func main() {
 				conf[section][option], _ = config.GetRawString(section, option)
 			}
 		}
+	}
 	}
 
 
@@ -73,8 +76,9 @@ func main() {
 
 	for _, plugin := range keys {
 		ret := reflect.ValueOf(f[plugin]).Call(nil)
-		if ret[1].IsNil() {
-			plugin_list = append(plugin_list, ret[0].Interface().(modules.Plugin))
+		module := ret[0].Interface().(modules.Plugin)
+		if module.Check(conf) == nil{
+			plugin_list = append(plugin_list, module)
 		}
 	}
 
@@ -98,10 +102,10 @@ func main() {
 
 	// Extract
 	if *i == 0 {
-		get(plugin_list, out, flag.Args())
+		get(plugin_list, out, conf)
 	} else {
 		for {
-			get(plugin_list, out, flag.Args())
+			get(plugin_list, out, conf)
 			time.Sleep(time.Second * time.Duration(*i))
 		}
 	}

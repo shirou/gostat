@@ -10,7 +10,7 @@ type CSV struct{}
 
 func (l CSV) Header(r record.Record) {}
 
-func (l CSV) Emit(rs []record.Record, args []string) error {
+func (l CSV) Emit(rs []record.Record, conf map[string]map[string]string) error {
 	kv := make([]string, 0)
 	keys := make([]string, 0)
 	for _, r := range rs {

@@ -3,7 +3,9 @@ package modules
 import (
 	"bitbucket.org/r_rudi/gostat/record"
 	"io"
+	"log"
 	"os"
+	"os/exec"
 	"strings"
 	"time"
 )
@@ -16,7 +18,7 @@ type Load struct {
 	Scale float32
 }
 
-func NewLoad() (Plugin, error) {
+func NewLoad() (Plugin) {
 	p := Load{
 		"load",
 		[]string{"1m", "5m", "15m"},
@@ -24,32 +26,70 @@ func NewLoad() (Plugin, error) {
 		"f",
 		0.5,
 	}
-	return Plugin(p), p.Check()
+	return Plugin(p)
 }
 
-func (p Load) Check() error {
-	filename := "/proc/loadavg"
-
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
-		return err
-	} else {
+func (p Load) Check(conf map[string]map[string]string) error {
+	switch conf["root"]["os"] {
+	case "linux":
+		filename := "/proc/loadavg"
+		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			return err
+		} else {
+			return nil
+		}
+		return nil // for 1.0
+	case "freebsd":
 		return nil
+	default:
+		return NewModuleError(p.Name, "Check", "Unsupported platform")
 	}
-	return nil // for 1.0
 }
 
-func (p Load) Extract(retchan chan record.Record) {
+func (p Load) getLinux() (map[string]string, error){
 	filename := "/proc/loadavg"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
-		close(retchan)
-		return
+		return nil, err
 	}
 
 	values := strings.Fields(s[0])
 	ret := map[string]string{}
 	for i, t := range p.Vars {
 		ret[t] = values[i]
+	}
+	return ret, err
+}
+
+func (p Load) getFreeBSD() (map[string]string, error){
+	out, err := exec.Command("/sbin/sysctl -n vm.loadavg").Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+	values := strings.Fields(string(out))
+	ret := map[string]string{}
+	for i, t := range p.Vars {
+		ret[t] = values[i]
+	}
+	return ret, err
+}
+
+
+func (p Load) Extract(retchan chan record.Record, conf map[string]map[string]string) {
+	ret := map[string]string{}
+	var err error
+	switch conf["root"]["os"] {
+	case "linux":
+		ret, err = p.getLinux()
+	case "freebsd":
+		ret, err = p.getFreeBSD()
+	default:
+		close(retchan)
+		return
+	}
+	if err != nil {
+		close(retchan)
+		return
 	}
 
 	r := record.Record{p.Name, time.Now(), ret}

@@ -16,7 +16,7 @@ type Mem struct {
 	Scale int
 }
 
-func NewMem() (Plugin, error) {
+func NewMem() (Plugin) {
 	p := Mem{
 		"memory usage",
 		[]string{"used", "buff", "cach", "free"},
@@ -24,10 +24,10 @@ func NewMem() (Plugin, error) {
 		"f",
 		1024,
 	}
-	return Plugin(p), p.Check()
+	return Plugin(p)
 }
 
-func (p Mem) Check() error {
+func (p Mem) Check(conf map[string]map[string]string) error {
 	filename := "/proc/meminfo"
 
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
@@ -38,7 +38,7 @@ func (p Mem) Check() error {
 	return nil // for 1.0
 }
 
-func (p Mem) Extract(retchan chan record.Record) {
+func (p Mem) Extract(retchan chan record.Record, conf map[string]map[string]string) {
 	filename := "/proc/meminfo"
 	s, err := ReadLines(filename)
 	if err != io.EOF {

@@ -51,15 +51,11 @@ func (m MQTT) disconnect(conn io.Writer) error {
 	return msg.Encode(conn)
 }
 
-func (m MQTT) Emit(rs []record.Record, args []string) error {
-	var topic string
-	if len(args) < 2 {
-		topic = "gostat"
-	} else {
-		topic = args[1]
-	}
+func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error {
+	topic := conf["mqtt"]["topic"]
+	server := conf["mqtt"]["server"]
 
-	conn, err := net.Dial("tcp", args[0])
+	conn, err := net.Dial("tcp", server)
 	if err != nil {
 		fmt.Println("Could not connect server")
 		return err

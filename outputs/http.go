@@ -11,8 +11,8 @@ type Http struct{}
 
 func (l Http) Header(r record.Record) {}
 
-func (l Http) Emit(rs []record.Record, args []string) error {
-	dst := args[0]
+func (l Http) Emit(rs []record.Record, conf map[string]map[string]string) error {
+	dst := conf["root"]["server"]
 
 	for _, r := range rs {
 		value := make(map[string]string, 0)
