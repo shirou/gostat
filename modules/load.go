@@ -62,11 +62,13 @@ func (p Load) getLinux() (map[string]string, error){
 }
 
 func (p Load) getFreeBSD() (map[string]string, error){
-	out, err := exec.Command("/sbin/sysctl -n vm.loadavg").Output()
+	out, err := exec.Command("/sbin/sysctl", "-n", "vm.loadavg").Output()
 	if err != nil {
 		log.Fatal(err)
 	}
-	values := strings.Fields(string(out))
+	v := strings.Replace(string(out), "{ ", "", 1)
+	v = strings.Replace(string(v), " }", "", 1)
+	values := strings.Fields(string(v))
 	ret := map[string]string{}
 	for i, t := range p.Vars {
 		ret[t] = values[i]
