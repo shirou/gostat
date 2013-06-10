@@ -17,7 +17,7 @@ type Disk struct {
 	Scale int
 }
 
-func NewDisk() (Plugin) {
+func NewDisk() Plugin {
 	p := Disk{
 		"disk",
 		[]string{"read", "writ"},

@@ -18,7 +18,7 @@ type Cpu struct {
 	Scale int
 }
 
-func NewCpu() (Plugin) {
+func NewCpu() Plugin {
 	p := Cpu{
 		"cpu",
 		[]string{"usr", "sys", "idl", "wai", "hiq", "siq", "stl"}, // 2.6.11 or later

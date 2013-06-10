@@ -3,13 +3,13 @@ package modules
 import (
 	"bitbucket.org/r_rudi/gostat/record"
 	"bufio"
+	"fmt"
 	"os"
 	"strings"
-	"fmt"
 )
 
 type Plugin interface {
-	Check(map[string]map[string]string) error               // check that resource is available or not
+	Check(map[string]map[string]string) error                 // check that resource is available or not
 	Extract(chan record.Record, map[string]map[string]string) // get information from that resource
 
 }
@@ -34,19 +34,19 @@ func ReadLines(filename string) ([]string, error) {
 	return ret, err
 }
 
-
 type ModuleError struct {
 	ModuleName string
-	Where string
-	Reason string
+	Where      string
+	Reason     string
 }
-func NewModuleError(modulename string, where string, reason string) error{
-	return ModuleError {
+
+func NewModuleError(modulename string, where string, reason string) error {
+	return ModuleError{
 		modulename,
 		where,
 		reason,
 	}
 }
-func (e ModuleError) Error() string{
+func (e ModuleError) Error() string {
 	return fmt.Sprintf("%s: %s, %s", e.ModuleName, e.Where, e.Reason)
 }

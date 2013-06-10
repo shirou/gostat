@@ -4,11 +4,11 @@ import (
 	"bitbucket.org/r_rudi/gostat/modules"
 	"bitbucket.org/r_rudi/gostat/outputs"
 	"bitbucket.org/r_rudi/gostat/record"
-	"github.com/msbranco/goconfig"
 	"flag"
+	"github.com/msbranco/goconfig"
 	"reflect"
-	"time"
 	"runtime"
+	"time"
 )
 
 func Call(m map[string]func() (modules.Plugin, error), name string) (result interface{}, err error) {
@@ -16,8 +16,8 @@ func Call(m map[string]func() (modules.Plugin, error), name string) (result inte
 	return f.Call(nil), nil
 }
 
-func funcs() map[string]func() (modules.Plugin) {
-	funcs := map[string]func() (modules.Plugin){
+func funcs() map[string]func() modules.Plugin {
+	funcs := map[string]func() modules.Plugin{
 		"aio":  modules.NewAio,
 		"cpu":  modules.NewCpu,
 		"load": modules.NewLoad,
@@ -53,18 +53,17 @@ func main() {
 	conf["root"] = make(map[string]string)
 	conf["root"]["os"] = runtime.GOOS
 	conf["root"]["configfile"] = *c
-	if *c != ""{
-	config, err := goconfig.ReadConfigFile(*c);
-	if err == nil{
-		for _, section := range config.GetSections(){
-			options, _ := config.GetOptions(section)
-			for _, option := range options{
-				conf[section][option], _ = config.GetRawString(section, option)
+	if *c != "" {
+		config, err := goconfig.ReadConfigFile(*c)
+		if err == nil {
+			for _, section := range config.GetSections() {
+				options, _ := config.GetOptions(section)
+				for _, option := range options {
+					conf[section][option], _ = config.GetRawString(section, option)
+				}
 			}
 		}
 	}
-	}
-
 
 	plugin_list := make([]modules.Plugin, 0)
 
@@ -77,11 +76,10 @@ func main() {
 	for _, plugin := range keys {
 		ret := reflect.ValueOf(f[plugin]).Call(nil)
 		module := ret[0].Interface().(modules.Plugin)
-		if module.Check(conf) == nil{
+		if module.Check(conf) == nil {
 			plugin_list = append(plugin_list, module)
 		}
 	}
-
 
 	// Setting Output format
 	var out outputs.Output

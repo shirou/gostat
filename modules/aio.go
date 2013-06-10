@@ -15,7 +15,7 @@ type Aio struct {
 	Scale int
 }
 
-func NewAio() (Plugin) {
+func NewAio() Plugin {
 	p := Aio{
 		"aio",
 		[]string{"#aio"},

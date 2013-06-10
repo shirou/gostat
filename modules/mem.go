@@ -16,7 +16,7 @@ type Mem struct {
 	Scale int
 }
 
-func NewMem() (Plugin) {
+func NewMem() Plugin {
 	p := Mem{
 		"memory usage",
 		[]string{"used", "buff", "cach", "free"},

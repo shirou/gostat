@@ -18,7 +18,7 @@ type Load struct {
 	Scale float32
 }
 
-func NewLoad() (Plugin) {
+func NewLoad() Plugin {
 	p := Load{
 		"load",
 		[]string{"1m", "5m", "15m"},
@@ -46,7 +46,7 @@ func (p Load) Check(conf map[string]map[string]string) error {
 	}
 }
 
-func (p Load) getLinux() (map[string]string, error){
+func (p Load) getLinux() (map[string]string, error) {
 	filename := "/proc/loadavg"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
@@ -61,7 +61,7 @@ func (p Load) getLinux() (map[string]string, error){
 	return ret, err
 }
 
-func (p Load) getFreeBSD() (map[string]string, error){
+func (p Load) getFreeBSD() (map[string]string, error) {
 	out, err := exec.Command("/sbin/sysctl", "-n", "vm.loadavg").Output()
 	if err != nil {
 		log.Fatal(err)
@@ -75,7 +75,6 @@ func (p Load) getFreeBSD() (map[string]string, error){
 	}
 	return ret, err
 }
-
 
 func (p Load) Extract(retchan chan record.Record, conf map[string]map[string]string) {
 	ret := map[string]string{}
