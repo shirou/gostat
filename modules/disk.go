@@ -36,7 +36,7 @@ func (p Disk) Check(conf map[string]map[string]string) error {
 	} else {
 		return nil
 	}
-	return nil // for 1.0
+	return nil
 }
 
 func (p Disk) Extract(retchan chan record.Record, conf map[string]map[string]string) {

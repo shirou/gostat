@@ -38,7 +38,7 @@ func (p Load) Check(conf map[string]map[string]string) error {
 		} else {
 			return nil
 		}
-		return nil // for 1.0
+		return nil
 	case "freebsd":
 		return nil
 	default:

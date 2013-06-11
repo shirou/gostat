@@ -35,7 +35,7 @@ func (p Mem) Check(conf map[string]map[string]string) error {
 	} else {
 		return nil
 	}
-	return nil // for 1.0
+	return nil
 }
 
 func (p Mem) Extract(retchan chan record.Record, conf map[string]map[string]string) {

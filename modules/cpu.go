@@ -68,7 +68,7 @@ func (p Cpu) Extract(retchan chan record.Record, conf map[string]map[string]stri
 		close(retchan)
 		return
 	}
-	time.Sleep(time.Millisecond * 200) // FIXME: why 100?
+	time.Sleep(time.Millisecond * 200) // FIXME: why 200?
 	s2, total2, err := p.GetVal(filename, p.Vars)
 	if err != nil {
 		close(retchan)

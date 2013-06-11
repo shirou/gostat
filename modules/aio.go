@@ -34,7 +34,7 @@ func (p Aio) Check(conf map[string]map[string]string) error {
 	} else {
 		return nil
 	}
-	return nil // for 1.0
+	return nil
 }
 
 func (p Aio) Extract(retchan chan record.Record, conf map[string]map[string]string) {
