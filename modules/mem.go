@@ -18,7 +18,7 @@ type Mem struct {
 
 func NewMem() Plugin {
 	p := Mem{
-		"memory usage",
+		"memory_usage",
 		[]string{"used", "buff", "cach", "free"},
 		[]string{"MemUsed", "Buffers", "Cached", "MemFree"},
 		"f",
