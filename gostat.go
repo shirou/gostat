@@ -9,6 +9,7 @@ import (
 	"reflect"
 	"runtime"
 	"time"
+	"sync"
 )
 
 func Call(m map[string]func() (modules.Plugin, error), name string) (result interface{}, err error) {
@@ -28,18 +29,27 @@ func funcs() map[string]func() modules.Plugin {
 
 func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[string]string) {
 	ch := make(chan record.Record)
-	count := 0
-	for _, o := range plugin_list {
-		count += 1
-		go o.Extract(ch, conf)
-	}
-
 	ret_list := make([]record.Record, 0)
-	for i := 0; i < count; i++ {
-		ret_list = append(ret_list, <-ch)
-	}
-	out.Emit(ret_list, conf)
+	var wg sync.WaitGroup
 
+	wg.Add(len(plugin_list))
+	for _, o := range plugin_list {
+		go func(){
+			defer wg.Done()
+			o.Extract(ch, conf)
+		}()
+	}
+
+	go func(){
+		defer wg.Done()
+		for msg := range ch {
+			ret_list = append(ret_list, msg)
+		}
+	}()
+
+	wg.Wait()
+
+	out.Emit(ret_list, conf)
 }
 
 func main() {
