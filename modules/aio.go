@@ -41,7 +41,6 @@ func (p Aio) Extract(retchan chan record.Record, conf map[string]map[string]stri
 	filename := "/proc/sys/fs/aio-nr"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
-		close(retchan)
 		return
 	}
 	r := record.Record{p.Name, time.Now(), map[string]string{

@@ -45,7 +45,6 @@ func (p Disk) Extract(retchan chan record.Record, conf map[string]map[string]str
 	filename := "/proc/diskstats"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
-		close(retchan)
 		return
 	}
 

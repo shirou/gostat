@@ -34,15 +34,15 @@ func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[s
 
 	wg.Add(len(plugin_list))
 	for _, o := range plugin_list {
-		go func(){
+		go func(o modules.Plugin){
 			defer wg.Done()
 			o.Extract(ch, conf)
-		}()
+		}(o)
 	}
 
 	go func(){
-		defer wg.Done()
 		for msg := range ch {
+			defer wg.Done()
 			ret_list = append(ret_list, msg)
 		}
 	}()

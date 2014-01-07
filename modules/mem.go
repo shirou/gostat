@@ -42,7 +42,6 @@ func (p Mem) Extract(retchan chan record.Record, conf map[string]map[string]stri
 	filename := "/proc/meminfo"
 	s, err := ReadLines(filename)
 	if err != io.EOF {
-		close(retchan)
 		return
 	}
 

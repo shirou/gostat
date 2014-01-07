@@ -85,11 +85,9 @@ func (p Load) Extract(retchan chan record.Record, conf map[string]map[string]str
 	case "freebsd":
 		ret, err = p.extractFreeBSD()
 	default:
-		close(retchan)
 		return
 	}
 	if err != nil {
-		close(retchan)
 		return
 	}
 
