@@ -58,7 +58,7 @@ func (p Load) extractLinux() (map[string]string, error) {
 	for i, t := range p.Vars {
 		ret[t] = values[i]
 	}
-	return ret, err
+	return ret, nil
 }
 
 func (p Load) extractFreeBSD() (map[string]string, error) {
