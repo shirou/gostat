@@ -9,7 +9,10 @@ import (
 	"net"
 )
 
-type MQTT struct{}
+type MQTT struct{
+	conn net.Conn
+	isConnected bool
+}
 
 func (m MQTT) Header(r record.Record) {}
 
@@ -56,24 +59,29 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 	server := conf["mqtt"]["server"]
 	port := conf["mqtt"]["port"]
 
-	conn, err := net.Dial("tcp", server + ":" + port)
-	if err != nil {
-		fmt.Println("Could not connect server")
-		return err
-	}
+	if m.isConnected == false{
+		conn, err := net.Dial("tcp", server + ":" + port)
+		if err != nil {
+			fmt.Println("Could not connect server")
+			return err
+		}
 
-	if err := m.connect(conn); err != nil {
-		fmt.Println("send CONNECT failed")
-		return err
+		if err := m.connect(conn); err != nil {
+			fmt.Println("send CONNECT failed")
+			return err
+		}
+		msg, err := DecodeOneMessage(conn, nil)
+		if err != nil {
+			fmt.Println("recv CONNECT ACK failed")
+			return err
+		}
+		if msg != nil {
+		} // FIXME
+		//	fmt.Println(m.getRet(msg))
+
+		m.conn = conn
+		m.isConnected = true
 	}
-	msg, err := DecodeOneMessage(conn, nil)
-	if err != nil {
-		fmt.Println("recv CONNECT ACK failed")
-		return err
-	}
-	if msg != nil {
-	} // FIXME
-	//	fmt.Println(m.getRet(msg))
 
 	for id, r := range rs {
 		value := make(map[string]string, 0)
@@ -98,12 +106,11 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 			MessageId: uint16(id),
 			Payload:   BytesPayload(data),
 		}
-
-		if err := msg.Encode(conn); err != nil {
+		if err := msg.Encode(m.conn); err != nil {
 			fmt.Println("send Publish failed")
 			continue
 		}
-		puback, err := DecodeOneMessage(conn, nil)
+		puback, err := DecodeOneMessage(m.conn, nil)
 		if err != nil {
 			fmt.Println("recv PUB ACK failed")
 			return err
@@ -113,11 +120,12 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 		//		fmt.Println(puback)
 
 	}
-
-	if err := m.disconnect(conn); err != nil {
+	/*
+	if err := m.disconnect(m.conn); err != nil {
 		fmt.Println("send DISCONNECT failed")
 		return err
 	}
+*/
 
 	return nil
 }
