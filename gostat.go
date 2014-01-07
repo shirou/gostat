@@ -43,7 +43,7 @@ func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[s
 }
 
 func main() {
-	c := flag.String("", "", "Config file")
+	c := flag.String("c", "~/.gostat.conf", "Config file")
 	o := flag.String("o", "ltsv", "Output format")
 	i := flag.Int("i", 0, "interval time(seconds)")
 	flag.Parse()
@@ -59,6 +59,9 @@ func main() {
 			for _, section := range config.GetSections() {
 				options, _ := config.GetOptions(section)
 				for _, option := range options {
+					if _, ok := conf[section]; ok == false {
+						conf[section] = make(map[string]string)
+					}
 					conf[section][option], _ = config.GetRawString(section, option)
 				}
 			}
@@ -107,5 +110,4 @@ func main() {
 			time.Sleep(time.Second * time.Duration(*i))
 		}
 	}
-
 }

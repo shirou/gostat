@@ -54,8 +54,9 @@ func (m MQTT) disconnect(conn io.Writer) error {
 func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error {
 	topic := conf["mqtt"]["topic"]
 	server := conf["mqtt"]["server"]
+	port := conf["mqtt"]["port"]
 
-	conn, err := net.Dial("tcp", server)
+	conn, err := net.Dial("tcp", server + ":" + port)
 	if err != nil {
 		fmt.Println("Could not connect server")
 		return err
