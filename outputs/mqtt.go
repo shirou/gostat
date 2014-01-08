@@ -7,6 +7,7 @@ import (
 	. "github.com/huin/mqtt"
 	"io"
 	"net"
+	"strings"
 )
 
 type MQTT struct {
@@ -55,7 +56,8 @@ func (m MQTT) disconnect(conn io.Writer) error {
 }
 
 func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error {
-	topic := conf["mqtt"]["topic"]
+	topic_prefix := conf["mqtt"]["topic_prefix"]
+	hostname := conf["root"]["hostname"]
 	server := conf["mqtt"]["server"]
 	port := conf["mqtt"]["port"]
 
@@ -96,13 +98,14 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 		if err != nil {
 			continue
 		}
+		topic := []string{topic_prefix, hostname, r.Tag}
 		msg := &Publish{
 			Header: Header{
 				DupFlag:  false,
 				QosLevel: QosAtLeastOnce,
 				Retain:   false,
 			},
-			TopicName: topic + "/" + r.Tag,
+			TopicName: strings.Join(topic, "/"),
 			MessageId: uint16(id),
 			Payload:   BytesPayload(data),
 		}

@@ -6,6 +6,7 @@ import (
 	"bitbucket.org/r_rudi/gostat/record"
 	"flag"
 	"github.com/msbranco/goconfig"
+	"os"
 	"reflect"
 	"runtime"
 	"sync"
@@ -57,6 +58,12 @@ func readConfig(path string) map[string]map[string]string {
 	conf := make(map[string]map[string]string)
 	conf["root"] = make(map[string]string)
 	conf["root"]["os"] = runtime.GOOS
+	hostname, err := os.Hostname()
+	if err == nil {
+		conf["root"]["hostname"] = hostname
+	} else {
+		conf["root"]["hostname"] = ""
+	}
 	conf["root"]["configfile"] = path
 	if path != "" {
 		config, err := goconfig.ReadConfigFile(path)
