@@ -9,8 +9,8 @@ import (
 	"net"
 )
 
-type MQTT struct{
-	conn net.Conn
+type MQTT struct {
+	conn        net.Conn
 	isConnected bool
 }
 
@@ -59,8 +59,8 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 	server := conf["mqtt"]["server"]
 	port := conf["mqtt"]["port"]
 
-	if m.isConnected == false{
-		conn, err := net.Dial("tcp", server + ":" + port)
+	if m.isConnected == false {
+		conn, err := net.Dial("tcp", server+":"+port)
 		if err != nil {
 			fmt.Println("Could not connect server")
 			return err
@@ -121,11 +121,11 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 
 	}
 	/*
-	if err := m.disconnect(m.conn); err != nil {
-		fmt.Println("send DISCONNECT failed")
-		return err
-	}
-*/
+		if err := m.disconnect(m.conn); err != nil {
+			fmt.Println("send DISCONNECT failed")
+			return err
+		}
+	*/
 
 	return nil
 }

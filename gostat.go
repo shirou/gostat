@@ -8,8 +8,8 @@ import (
 	"github.com/msbranco/goconfig"
 	"reflect"
 	"runtime"
-	"time"
 	"sync"
+	"time"
 )
 
 func Call(m map[string]func() (modules.Plugin, error), name string) (result interface{}, err error) {
@@ -34,13 +34,13 @@ func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[s
 
 	wg.Add(len(plugin_list))
 	for _, o := range plugin_list {
-		go func(o modules.Plugin){
+		go func(o modules.Plugin) {
 			defer wg.Done()
 			o.Extract(ch, conf)
 		}(o)
 	}
 
-	go func(){
+	go func() {
 		for msg := range ch {
 			defer wg.Done()
 			ret_list = append(ret_list, msg)
