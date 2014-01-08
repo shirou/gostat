@@ -17,14 +17,15 @@ func Call(m map[string]func() (modules.Plugin, error), name string) (result inte
 	return f.Call(nil), nil
 }
 
-func funcs() map[string]func() modules.Plugin {
-	funcs := map[string]func() modules.Plugin{
+// getModules returns modules which are will be used.
+func getModules() map[string]func() modules.Plugin {
+	modules := map[string]func() modules.Plugin{
 		"aio":  modules.NewAio,
 		"cpu":  modules.NewCpu,
 		"load": modules.NewLoad,
 		"mem":  modules.NewMem,
 	}
-	return funcs
+	return modules
 }
 
 func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[string]string) {
@@ -52,19 +53,13 @@ func get(plugin_list []modules.Plugin, out outputs.Output, conf map[string]map[s
 	out.Emit(ret_list, conf)
 }
 
-func main() {
-	c := flag.String("c", "~/.gostat.conf", "Config file")
-	o := flag.String("o", "ltsv", "Output format")
-	i := flag.Int("i", 0, "interval time(seconds)")
-	flag.Parse()
-
-	// load config file
+func readConfig(path string) map[string]map[string]string {
 	conf := make(map[string]map[string]string)
 	conf["root"] = make(map[string]string)
 	conf["root"]["os"] = runtime.GOOS
-	conf["root"]["configfile"] = *c
-	if *c != "" {
-		config, err := goconfig.ReadConfigFile(*c)
+	conf["root"]["configfile"] = path
+	if path != "" {
+		config, err := goconfig.ReadConfigFile(path)
 		if err == nil {
 			for _, section := range config.GetSections() {
 				options, _ := config.GetOptions(section)
@@ -78,14 +73,26 @@ func main() {
 		}
 	}
 
+	return conf
+}
+
+func main() {
+	c := flag.String("c", "~/.gostat.conf", "Config file")
+	o := flag.String("o", "ltsv", "Output format")
+	i := flag.Int("i", 0, "interval time(seconds)")
+	flag.Parse()
+
+	// load config file
+	conf := readConfig(*c)
 	plugin_list := make([]modules.Plugin, 0)
 
-	f := funcs()
+	f := getModules()
 	keys := make([]string, 0)
 	for k := range f {
 		keys = append(keys, k)
 	}
 
+	// Check specified plugins are enabled.
 	for _, plugin := range keys {
 		ret := reflect.ValueOf(f[plugin]).Call(nil)
 		module := ret[0].Interface().(modules.Plugin)
@@ -112,9 +119,10 @@ func main() {
 	}
 
 	// Extract
-	if *i == 0 {
+	if *i == 0 { // 0 means do only once
 		get(plugin_list, out, conf)
 	} else {
+		// loop
 		for {
 			get(plugin_list, out, conf)
 			time.Sleep(time.Second * time.Duration(*i))
