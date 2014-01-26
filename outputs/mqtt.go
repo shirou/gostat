@@ -21,7 +21,7 @@ func (m MQTT) connect(conn io.Writer) error {
 	msg := &Connect{
 		Header: Header{
 			DupFlag:  false,
-			QosLevel: QosAtLeastOnce,
+			QosLevel: QosAtMostOnce,
 			Retain:   false,
 		},
 		ProtocolName:    "MQIsdp",
@@ -29,7 +29,7 @@ func (m MQTT) connect(conn io.Writer) error {
 		WillRetain:      false,
 		WillFlag:        false,
 		CleanSession:    false,
-		WillQos:         QosAtLeastOnce,
+		WillQos:         QosAtMostOnce,
 		KeepAliveTimer:  10,
 		ClientId:        "gostat",
 		WillTopic:       "",
@@ -60,6 +60,8 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 	hostname := conf["root"]["hostname"]
 	server := conf["mqtt"]["server"]
 	port := conf["mqtt"]["port"]
+
+	fmt.Println("hoge")
 
 	if m.isConnected == false {
 		conn, err := net.Dial("tcp", server+":"+port)
@@ -102,7 +104,7 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 		msg := &Publish{
 			Header: Header{
 				DupFlag:  false,
-				QosLevel: QosAtLeastOnce,
+				QosLevel: QosAtMostOnce,
 				Retain:   false,
 			},
 			TopicName: strings.Join(topic, "/"),
@@ -110,17 +112,21 @@ func (m MQTT) Emit(rs []record.Record, conf map[string]map[string]string) error 
 			Payload:   BytesPayload(data),
 		}
 		if err := msg.Encode(m.conn); err != nil {
+			fmt.Println(err)
 			fmt.Println("send Publish failed")
 			continue
 		}
-		puback, err := DecodeOneMessage(m.conn, nil)
-		if err != nil {
-			fmt.Println("recv PUB ACK failed")
-			return err
-		}
-		if puback != nil {
-		} // FIXME
-		//		fmt.Println(puback)
+		/*
+			puback, err := DecodeOneMessage(m.conn, nil)
+			if err != nil {
+				fmt.Println("recv PUB ACK failed")
+				return err
+			}
+			if puback != nil {
+				fmt.Println(puback)
+			} // FIXME
+			//		fmt.Println(puback)
+		*/
 
 	}
 	/*
